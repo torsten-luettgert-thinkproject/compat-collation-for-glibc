@@ -8,6 +8,10 @@ LAST_RELEASE_TAG=${BRANCH}-v1.2
 GLIBC_DIR=glibc-2.17-c758a686
 DEV_DIR=devel/${GLIBC_DIR}
 
+PRELOAD="${PRELOAD:-1}"
+
+echo "Building for preload=$PRELOAD"
+
 if [ -z "${RPMBUILD}" ]; then
     echo "rpmbuild command not found"
     exit 1
@@ -69,25 +73,8 @@ show_diff() {
 }
 
 rpmpatch() {
-	(cd $DEV_DIR; git diff --relative --patch ${BASELINE_TAG}..HEAD) >SOURCES/9991-compatcollation-glibc.patch
+    (cd $DEV_DIR; git diff --relative --patch ${BASELINE_TAG}..HEAD) | sed "s/ENABLE_LD_PRELOAD=[01]/ENABLE_LD_PRELOAD=$PRELOAD/" >SOURCES/9991-compatcollation-glibc.patch
 }
 
-case "$1" in
-    build)
-        rpmpatch
-        build_rpm
-      ;;
-    rebuild)
-        rebuild_libs
-      ;;
-    diff)
-        show_diff $1 $2 $3
-      ;;
-    rpmpatch)
-        rpmpatch
-      ;;
-    *)
-        usage "ERROR: Invalid command $1"
-      ;;
-esac
-
+rpmpatch
+build_rpm

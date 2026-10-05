@@ -229,7 +229,7 @@ err_exit $?
 # build libcompatcollation.so library
 cd ${BUILDROOT}
 
-ENABLE_LD_PRELOAD=0
+ENABLE_LD_PRELOAD=1
 if [[ "${ENABLE_LD_PRELOAD}" == "1" ]]
 then
   VERSIONMAP="${BUILDDIR}/libc.map"
